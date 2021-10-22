@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <stdio.h>
+#include <sys/time.h>
 
 #include "../ds.h"
 #include "../logger.h"
@@ -23,7 +24,7 @@ void print_test_section(char* section) {
     printf("\n\033[0;1m%s\033[0m\n\n", section);
 }
 
-void test_ds() {
+void test_process_and_memory() {
     {
         struct partition* part = get_new_partition(NULL, NULL, 10, true);
         test_log("New partition", part->is_free && part->size == 10);
@@ -82,6 +83,51 @@ void test_ds() {
             test_log("Next fit", part->size == 3 && part->is_free == false);
         }
     }
+
+    {
+        print_memory(mem);
+        float usage = get_percentage_memory_utilization(mem);
+        test_log("Memory utilization check (1/2)", usage == 48);
+    }
+
+    {
+        deallocate_partition(mem->head);
+        print_memory(mem);
+        float usage = get_percentage_memory_utilization(mem);
+        test_log("Memory utilization check (2/2)", usage == 43);
+    }
+}
+
+void test_queue() {
+    struct timeval t;
+    int MAX_SIZE = 2;
+    struct process_queue* queue = get_new_empty_queue(MAX_SIZE);
+    test_log("get_new_empty_queue()", queue->size == 0 && queue->max_size == MAX_SIZE);
+
+    enqueue(queue, get_new_process(10, 20, t));
+    struct process* front = peek_queue(queue);
+    test_log("(1/2) enqueue()", queue->size == 1 && front->s == 10 && front->d == 20);
+
+    enqueue(queue, get_new_process(30, 40, t));
+    front = peek_queue(queue);
+    struct process* back = queue->head->proc;
+    test_log("(2/2) enqueue()", queue->size == 2 && front->s == 10 && front->d == 20 && back->s == 30 && back->d == 40);
+
+    test_log("Queue max size check", enqueue(queue, get_new_process(50, 60, t)) == false);
+
+    front = dequeue(queue);
+    test_log("(1/2) dequeue()", queue->size == 1 && front->s == 10 && front->d == 20);
+    free_process(front);
+
+    free_process(dequeue(queue));
+    test_log("(2/2) dequeue()", queue->size == 0 && dequeue(queue) == NULL);
+
+    free_queue(queue);
+}
+
+void test_ds() {
+    test_process_and_memory();
+    test_queue();
 }
 
 int main(int argc, char** argv) {
