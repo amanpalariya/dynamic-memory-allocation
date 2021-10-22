@@ -139,12 +139,6 @@ void* process_creator(void* args) {
     }
 }
 
-void log_stats(struct stats* stat) {
-    float avg_turnaround_time = (stat->turnaround_time_den == 0 ? 0 : (1.0f * stat->turnaround_time_num) / stat->turnaround_time_den);
-    float avg_mem_util = (stat->memory_utilization_den == 0 ? 0 : (stat->memory_utilization_num / stat->memory_utilization_den));
-    log_info("Avg. turnaround time: %.2fms, Avg. memory util: %.2f%", avg_turnaround_time, avg_mem_util);
-}
-
 void* process_allocator(void* args) {
     struct process_allocator_args* _args = (struct process_allocator_args*)(args);
     int p = _args->p;
@@ -193,7 +187,9 @@ void* process_allocator(void* args) {
             stat->memory_utilization_num += get_percentage_memory_utilization(mem);
             stat->memory_utilization_den += 1;
 
-            log_stats(stat);
+            float avg_turnaround_time = (stat->turnaround_time_den == 0 ? 0 : (1.0f * stat->turnaround_time_num) / stat->turnaround_time_den);
+            float avg_mem_util = (stat->memory_utilization_den == 0 ? 0 : (stat->memory_utilization_num / stat->memory_utilization_den));
+            log_stat("Avg. turnaround time: %.2fms, Avg. memory util: %.2f%", avg_turnaround_time, avg_mem_util);
 
             pthread_mutex_unlock(mem_mutex);  // Unlock
         }

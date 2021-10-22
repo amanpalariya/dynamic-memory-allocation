@@ -79,6 +79,6 @@ int main(int argc, char** argv) {
 
     float avg_turnaround_time = (stat->turnaround_time_den == 0 ? 0 : (1.0f * stat->turnaround_time_num) / stat->turnaround_time_den);
     float avg_mem_util = (stat->memory_utilization_den == 0 ? 0 : (stat->memory_utilization_num / stat->memory_utilization_den));
-    log_info("Avg. turnaround time: %.2fms, Avg. memory util: %.2f%", avg_turnaround_time, avg_mem_util);
+    log_stat("Avg. turnaround time: %.2fms, Avg. memory util: %.2f%", avg_turnaround_time, avg_mem_util);
     return 0;
 }
