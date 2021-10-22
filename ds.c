@@ -129,14 +129,14 @@ struct partition* next_fit(struct memory* mem, int process_size, int starting_ad
     int address = 0;
     while (part != NULL) {
         if (address >= starting_address) break;
-        if (part->is_free && part->size >= process_size && fit != NULL)
+        if (fit == NULL && part->is_free && part->size >= process_size)
             fit = part;
         address += part->size;
         part = part->next;
     }
     while (part != NULL) {
         if (part->is_free && part->size >= process_size) {
-            fit = allocate_partition(part, process_size);
+            fit = part;
             break;
         }
         part = part->next;
