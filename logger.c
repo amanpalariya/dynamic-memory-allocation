@@ -54,7 +54,7 @@ char* get_prefixed_format(int log_level, const char* fmt) {
             sprintf(prefix, "ERROR %s:", timestr);
             break;
         case LOG_LEVEL_STAT:
-            sprintf(prefix, "STAT %s:", timestr);
+            sprintf(prefix, "STAT  %s:", timestr);
             break;
         default:
             break;
