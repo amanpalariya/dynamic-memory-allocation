@@ -89,6 +89,9 @@ void deallocate_partition(struct partition* part) {
     if (part->prev != NULL && part->prev->is_free) {
         part->prev->size += part->size;
         part->prev->next = part->next;
+        if (part->next != NULL) {
+            part->next->prev = part->prev;
+        }
         free_partition(part);
     }
 }
