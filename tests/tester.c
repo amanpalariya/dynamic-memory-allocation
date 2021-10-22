@@ -80,21 +80,29 @@ void test_process_and_memory() {
             struct partition* part = mem->head->next->next->next->next;
             print_memory(mem);
             next_fit(mem, 3, 16);
-            test_log("Next fit", part->size == 3 && part->is_free == false);
+            test_log("Next fit (1/2)", part->size == 3 && part->is_free == false);
+        }
+        {
+            struct partition* part = mem->head->next;
+            print_memory(mem);
+            next_fit(mem, 3, 100 - 10 - 42 + 1);
+            test_log("Next fit (2/2)", part->size == 3 && part->is_free == false);
         }
     }
 
     {
         print_memory(mem);
         float usage = get_percentage_memory_utilization(mem);
-        test_log("Memory utilization check (1/2)", usage == 48);
+        log_debug("Usage: %f", usage);
+        test_log("Memory utilization check (1/2)", usage == 51);
     }
 
     {
         deallocate_partition(mem->head);
         print_memory(mem);
         float usage = get_percentage_memory_utilization(mem);
-        test_log("Memory utilization check (2/2)", usage == 43);
+        log_debug("Usage: %f", usage);
+        test_log("Memory utilization check (2/2)", usage == 46);
     }
 }
 
