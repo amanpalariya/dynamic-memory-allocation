@@ -156,9 +156,15 @@ void* process_allocator(void* args) {
     enum placement_algo algo = _args->algo;
     int last_address = 0;
 
+    struct timeval start;
+    bool is_new_process = true;
     while (true) {
         usleep(10000);
         if (!is_queue_empty(queue)) {
+            if (is_new_process) {
+                start = get_curr_time();
+                is_new_process = false;
+            }
             struct process* proc = peek_queue(queue);
             log_info("Spawing process (s: %dMB, d: %ds)", proc->s, proc->d);
 
@@ -166,7 +172,7 @@ void* process_allocator(void* args) {
 
             struct partition* part = allocate(mem, proc, &last_address, algo);
             if (part != NULL) {
-                stat->turnaround_time_num += get_time_diff_in_millis(proc->arrival_time, get_curr_time());
+                stat->turnaround_time_num += get_time_diff_in_millis(start, get_curr_time());
                 stat->turnaround_time_den += 1;
                 pthread_mutex_lock(queue_mutex);  // Q Lock
                 dequeue(queue);
@@ -176,6 +182,7 @@ void* process_allocator(void* args) {
                 pthread_create(&thread_id, NULL, run_process, get_run_process_args(proc, part, address, mem_mutex, mem_available));
                 log_info("Process (s: %dMB, d: %ds) allocated %dMB partition [%d, %d]", proc->s, proc->d, part->size, address, address + part->size);
                 print_memory(mem);
+                is_new_process = true;
             } else {
                 log_warning("Not enough memory for process (s: %dMB, d: %ds)", proc->s, proc->d);
                 pthread_cond_wait(mem_available, mem_mutex);  // Condition wait
