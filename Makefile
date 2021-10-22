@@ -1,4 +1,4 @@
---dependencies = logger.c ds.c
+--dependencies = logger.c ds.c simulator.c helper.c
 --libraries = -lpthread
 --build-dir = build
 --main-file = main.c
