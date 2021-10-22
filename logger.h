@@ -5,6 +5,7 @@
 #define LOG_LEVEL_INFO (1)
 #define LOG_LEVEL_WARNING (2)
 #define LOG_LEVEL_ERROR (3)
+#define LOG_LEVEL_STAT (4)
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -30,5 +31,7 @@ void log_info(const char* fmt, ...);
 void log_warning(const char* fmt, ...);
 
 void log_error(const char* fmt, ...);
+
+void log_stat(const char* fmt, ...);
 
 #endif

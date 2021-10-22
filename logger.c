@@ -53,6 +53,9 @@ char* get_prefixed_format(int log_level, const char* fmt) {
         case LOG_LEVEL_ERROR:
             sprintf(prefix, "ERROR %s:", timestr);
             break;
+        case LOG_LEVEL_STAT:
+            sprintf(prefix, "STAT %s:", timestr);
+            break;
         default:
             break;
     }
@@ -96,5 +99,12 @@ void log_error(const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
     console_log(LOG_LEVEL_ERROR, fmt, args);
+    va_end(args);
+}
+
+void log_stat(const char* fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    console_log(LOG_LEVEL_STAT, fmt, args);
     va_end(args);
 }
