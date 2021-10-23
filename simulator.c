@@ -108,7 +108,8 @@ void* run_process(void* args) {
     struct partition* part = _args->part;
     int address = _args->partition_address;
     deallocate_partition(part);
-    log_warning("%dMB partition [%d, %d] freed from process (s: %dMB, d: %ds)", part->size, address, address + part->size, proc->s, proc->d);
+    log_warning("%dMB partition [%d, %d] freed from process (s: %dMB, d: %ds)", proc->s, address, address + proc->s, proc->s, proc->d);
+    free_process(proc);
     pthread_mutex_unlock(mem_mutex);
     pthread_cond_broadcast(_args->mem_available);
 }
