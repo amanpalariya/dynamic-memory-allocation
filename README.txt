@@ -12,6 +12,10 @@ It simulates the process of memory allocation to processes in an operating syste
 The user inputs a bunch of parameters that define max memory, reserved memory, placement algorithm, arrival rate, etc.
 On bases of the inputs, the program simulates the working of an operating system.
 
+During simulation, one thread keeps creating process on basis of arrival rate and enqueues them in a queue.
+One thread, dequeues the processes and allocates them memory on basis of the algorithm.
+Each process is given a thread, which on completion frees the memory and signals the same.
+
 # How to compile and run?
 
 1. Unzip the source code.
