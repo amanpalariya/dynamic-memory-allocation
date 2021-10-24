@@ -153,22 +153,17 @@ void* process_allocator(void* args) {
     enum placement_algo algo = _args->algo;
     int last_address = 0;
 
-    struct timeval start;
-    long turnaround_time = 0;
     while (true) {
         usleep(10000);
         if (!is_queue_empty(queue)) {
-            start = get_curr_time();
             struct process* proc = peek_queue(queue);
             log_info("Spawing process (s: %dMB, d: %ds)", proc->s, proc->d);
-
-            turnaround_time += get_time_diff_in_millis(start, get_curr_time());
 
             pthread_mutex_lock(mem_mutex);  // Lock
 
             struct partition* part = allocate(mem, proc, &last_address, algo);
             if (part != NULL) {
-                stat->turnaround_time_num += turnaround_time;
+                stat->turnaround_time_num += get_time_diff_in_millis(proc->arrival_time, get_curr_time());
                 stat->turnaround_time_den += 1;
                 pthread_mutex_lock(queue_mutex);  // Q Lock
                 dequeue(queue);
@@ -177,20 +172,18 @@ void* process_allocator(void* args) {
                 pthread_t thread_id;
                 pthread_create(&thread_id, NULL, run_process, get_run_process_args(proc, part, address, mem_mutex, mem_available));
                 log_info("Process (s: %dMB, d: %ds) allocated %dMB partition [%d, %d]", proc->s, proc->d, part->size, address, address + part->size);
+
                 print_memory(mem);
-                turnaround_time = 0;
+
+                float avg_turnaround_time = (stat->turnaround_time_den == 0 ? 0 : (1.0f * stat->turnaround_time_num) / stat->turnaround_time_den);
+                float avg_mem_util = (stat->memory_utilization_den == 0 ? 0 : (stat->memory_utilization_num / stat->memory_utilization_den));
+                log_stat("Avg. turnaround time: %.2fms, Avg. memory util: %.2f%", avg_turnaround_time, avg_mem_util);
             } else {
-                start = get_curr_time();
                 log_warning("Not enough memory for process (s: %dMB, d: %ds)", proc->s, proc->d);
                 pthread_cond_wait(mem_available, mem_mutex);  // Condition wait
-                turnaround_time += get_time_diff_in_millis(start, get_curr_time());
             }
             stat->memory_utilization_num += get_percentage_memory_utilization(mem);
             stat->memory_utilization_den += 1;
-
-            float avg_turnaround_time = (stat->turnaround_time_den == 0 ? 0 : (1.0f * stat->turnaround_time_num) / stat->turnaround_time_den);
-            float avg_mem_util = (stat->memory_utilization_den == 0 ? 0 : (stat->memory_utilization_num / stat->memory_utilization_den));
-            log_stat("Avg. turnaround time: %.2fms, Avg. memory util: %.2f%", avg_turnaround_time, avg_mem_util);
 
             pthread_mutex_unlock(mem_mutex);  // Unlock
         }
