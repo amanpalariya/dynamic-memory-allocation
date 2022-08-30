@@ -38,7 +38,7 @@ After doing the following steps
 2. Start the simulation by executing `printf "1000 200 10 10 10 1 100 1" | ./build/main.out`.
 
 A possible output can be the following
----
+```
 INFO  16:31:55: RUNNING SIMULATION WITH FOLLOWING CONFIG
 INFO  16:31:55: p: 1000MB
 INFO  16:31:55: q: 200MB
@@ -5251,4 +5251,4 @@ STAT  16:32:55: 275.38, 73.00
 INFO  16:32:55: Spawing process (s: 30MB, d: 10s)
 WARN  16:32:55: Not enough memory for process (s: 30MB, d: 10s)
 STAT  16:32:55: Avg. turnaround time: 275.38ms, Avg. memory util: 73.00%
----
+```
