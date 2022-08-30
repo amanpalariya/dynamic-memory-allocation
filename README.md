@@ -1,7 +1,3 @@
-Submitter name: Aman Palariya
-Roll No: 2019CSB1068
-Course: CS303
-
 # What does the program do?
 
 It simulates the process of memory allocation to processes in an operating system.
